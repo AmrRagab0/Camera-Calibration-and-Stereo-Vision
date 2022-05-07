@@ -1,1 +1,1 @@
-// Load images and prepare them
+#  Load images and prepare them
