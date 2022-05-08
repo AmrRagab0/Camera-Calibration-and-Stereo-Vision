@@ -4,6 +4,7 @@
 # CS 4495/6476 @ Georgia Tech
 
 import numpy as np
+from numpy.linalg import inv
 
 
 # Returns the projection matrix for a given set of corresponding 2D and
@@ -25,7 +26,9 @@ def calculate_projection_matrix(Points_2D, Points_3D):
     #  Xn Yn Zn 1 0  0  0  0 -un*Xn -un*Yn -un*Zn          M24         .
     #  0  0  0  0 Xn Yn Zn 1 -vn*Xn -vn*Yn -vn*Zn ]        M31         .
     #                                                      M32         un
-    #                                                      M33         vn ]
+    #                                                       M33         vn ]
+    #                   World_points                                 Image_points
+    #
     #
     # Then you can solve this using least squares with the 'np.linalg.lstsq' operator.
     # Notice you obtain 2 equations for each corresponding 2D and 3D point
@@ -35,15 +38,36 @@ def calculate_projection_matrix(Points_2D, Points_3D):
     # set of equations on the project page. 
     #
     ##################
-    # Your code here #
+    N_of_points = Points_3D.shape[0]
+    # init
+    Image_points = np.zeros((N_of_points*2,1))
+    World_points = np.zeros((N_of_points*2,11)) # as described above
+
+    # setting the matrices 
+    for i in range(0,N_of_points,2):
+        World_points[i,:] = [Points_3D[i,1] Points_3D[i,2] Points_3D[i:3] 1 0 0 0 0 -Points_2D[i,1]*Points_3D[i,1] -Points_2D[i,1]*Points_3D[i,2] -Points_2D[i,1]*Points_3D[i,3]]
+        World_points[i+1,:] = [0 0 0 0 Points_3D[i,1] Points_3D[i,2] Points_3D[i:3] 1 -Points_2D[i,2]*Points_3D[i,1] -Points_2D[i,2]*Points_3D[i,2] -Points_2D[i,2]*Points_3D[i,3]]
+        Image_points[i] = [Points_2D(i,1) ]
+        Image_points[i+1] = [Points_2D(i,2)] 
+
+    # world_points * M = image points
+    # so, M = world points inverse * image points
+
+    World_points_inv = inv(World_points)
+
+    M = World_points_inv*Image_points
+    print(M.shape)
+    M = M.reshape((3,4))
+
+
     ##################
 
     # This M matrix came from a call to rand(3,4). It leads to a high residual.
     # Your total residual should be less than 1.
-    print('Randomly setting matrix entries as a placeholder')
-    M = np.array([[0.1768, 0.7018, 0.7948, 0.4613],
-                  [0.6750, 0.3152, 0.1136, 0.0480],
-                  [0.1020, 0.1725, 0.7244, 0.9932]])
+    #print('Randomly setting matrix entries as a placeholder')
+    #M = np.array([[0.1768, 0.7018, 0.7948, 0.4613],
+     #             [0.6750, 0.3152, 0.1136, 0.0480],
+      #            [0.1020, 0.1725, 0.7244, 0.9932]])
 
     return M
 
