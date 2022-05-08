@@ -45,8 +45,8 @@ def calculate_projection_matrix(Points_2D, Points_3D):
 
     # setting the matrices 
     for i in range(0,N_of_points,2):
-        World_points[i,:] = [Points_3D[i,1] Points_3D[i,2] Points_3D[i:3] 1 0 0 0 0 -Points_2D[i,1]*Points_3D[i,1] -Points_2D[i,1]*Points_3D[i,2] -Points_2D[i,1]*Points_3D[i,3]]
-        World_points[i+1,:] = [0 0 0 0 Points_3D[i,1] Points_3D[i,2] Points_3D[i:3] 1 -Points_2D[i,2]*Points_3D[i,1] -Points_2D[i,2]*Points_3D[i,2] -Points_2D[i,2]*Points_3D[i,3]]
+        World_points[i,:] = [Points_3D[i,1],Points_3D[i,2] ,Points_3D[i:3] ,1, 0, 0,0, 0 ,-Points_2D[i,1]*Points_3D[i,1], -Points_2D[i,1]*Points_3D[i,2],-Points_2D[i,1]*Points_3D[i,3]]
+        World_points[i+1,:] = [0,0,0,0,Points_3D[i,1],Points_3D[i,2],Points_3D[i:3],1, -Points_2D[i,2]*Points_3D[i,1], -Points_2D[i,2]*Points_3D[i,2], -Points_2D[i,2]*Points_3D[i,3]]
         Image_points[i] = [Points_2D(i,1) ]
         Image_points[i+1] = [Points_2D(i,2)] 
 
@@ -76,14 +76,20 @@ def calculate_projection_matrix(Points_2D, Points_3D):
 # 'M' is the 3x4 projection matrix
 # 'Center' is the 1x3 matrix of camera center location in world coordinates
 def compute_camera_center(M):
-    ##################
-    # Your code here #
-    ##################
+   
+    # Center = -Q^-1 * m4 
+
+    Q = M[:,0:3]
+    m4 = M[:,3]
+    Q_inv = inv(Q)
+
+    Center = -Q_inv*m4
+
 
     # Replace this with the correct code
     # In the visualization you will see that this camera location is clearly
     # incorrect, placing it in the center of the room where it would not see all
     # of the points.
-    Center = np.array([1, 1, 1])
+    # Center = np.array([1, 1, 1])
 
     return Center
