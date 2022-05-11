@@ -10,19 +10,6 @@ Points_2D = np.loadtxt('../data/pts2d-norm-pic_a.txt')
 Points_3D = np.loadtxt('../data/pts3d-norm.txt')
 
 ##                              ????????????????????????????????????
-# Points_2D_r = 
-# up_right_3D = 
-# Points_3D_r = 
-# #Normalize
-# Points_2D_r = 
-# Points_3D_r = 
-
-# Points_2D_l = 
-# up_left_3D = 
-# Points_3D_l = 
-# #Normalize
-# Points_2D_l =
-# Points_3D_l =
 
 #Calculate the projection matrix given corresponding 2D and 3D points
 
@@ -51,7 +38,7 @@ Center_r = compute_camera_center(M_r)
 
 # F=
 # F, mask = cv2.findFundamentalMat(img1_points, img2_points, cv2.FM_RANSAC)
-
+F=cv2.stereoCalibrate(objpoints, imgpoints_r,imgpoints_l)
 
 ####################################################################################
 
@@ -113,7 +100,14 @@ passing the value of known 3D points (objpoints)
 and corresponding pixel coordinates of the 
 detected corners (imgpoints)
 """
-ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1],None,None)
+ret, M, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1],None,None)
+
+# evaluate points
+[Projected_2D_Pts_r, Residual_r] = evaluate_points( M, imgpoints, objpoints)
+
+#[Projected_2D_Pts_l, Residual_l] = evaluate_points( M_l, Points_2D_l, Points_3D_l)
+#[Projected_2D_Pts_r, Residual_r] = evaluate_points( M_r, Points_2D_r, Points_3D_r)
+
 
 print("Camera matrix : \n")
 print(mtx)
