@@ -111,7 +111,7 @@ P = np.matmul(mtx,Rt) # A[R|t]
     '''
     
 
-    return M,objpoints, imgpoints
+    return M,objpoints, imgpoints,K
 
 
 
@@ -123,8 +123,8 @@ images_dir_l=data_dir+'/left'
 
 #Validate the computed projection matrix as done in PART I
 
-M_r,objpoints_r, imgpoints_r=camera_calibration(images_dir_r)
-M_l,objpoints_l, imgpoints_l=camera_calibration(images_dir_l)
+M_r,objpoints_r, imgpoints_r,_=camera_calibration(images_dir_r)
+M_l,objpoints_l, imgpoints_l,_=camera_calibration(images_dir_l)
 
 M_r_0=calculate_projection_matrix(imgpoints_r,objpoints_r)
 M_l_0=calculate_projection_matrix(imgpoints_l,objpoints_l)
