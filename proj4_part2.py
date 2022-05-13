@@ -18,7 +18,7 @@ def camera_calibration(images_dir):
     '''
     input: path
     
-    output: M ,
+    output: M ,objpoints, imgpoints
     
     
     '''
@@ -79,9 +79,15 @@ def camera_calibration(images_dir):
     and corresponding pixel coordinates of the 
     detected corners (imgpoints)
     """
-    ret, M, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1],None,None)
+    ret, K, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1],None,None)
+    
+    
+    R=cv.Rodrigues(rvecs[0], R)
+    temp=np.concatinate((R,tvecs[0]),axis=1)
+    
+    M = np.dot(K,x)
 
-    return M,rvecs,tvecs
+    return M,objpoints, imgpoints
 
 
 
@@ -106,7 +112,8 @@ Center_r = compute_camera_center(M_r)
 #compute the fundamental matrix
 # F=
 # F, mask = cv2.findFundamentalMat(img1_points, img2_points, cv2.FM_RANSAC)
-F=cv2.stereoCalibrate(objpoints, imgpoints_r,imgpoints_l) ??????????
+S=cv2.stereoCalibrate(objpoints, imgpoints_r,imgpoints_l)
+E=S[:-2]
 
 '''
 # print("Camera matrix : \n")
