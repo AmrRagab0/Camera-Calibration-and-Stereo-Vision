@@ -22,10 +22,10 @@ def camera_calibration(images_dir):
     
     
     '''
-
+    print("-----/-*/-//*///////////////-------------------")
 
     # Defining the dimensions of checkerboard
-    CHECKERBOARD = (6,9)
+    CHECKERBOARD = (7,7)
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
     # Creating vector to store vectors of 3D points for each checkerboard image
@@ -41,15 +41,18 @@ def camera_calibration(images_dir):
 
     # Extracting path of individual image stored in a given directory
     # images = glob.glob('./images/*.jpg')
-    images = glob.glob(images_dir+'*.jpeg')
-
+    images = glob.glob(images_dir+'/*.jpeg')
+    print("path---- ",images_dir )
+    gray=[]
     for fname in images:
         img = cv2.imread(fname)
         gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+        #cv2.imshow('gray',gray)
         # Find the chess board corners
         # If desired number of corners are found in the image then ret = true
-        ret, corners = cv2.findChessboardCorners(gray, CHECKERBOARD, cv2.CALIB_CB_ADAPTIVE_THRESH+
-            cv2.CALIB_CB_FAST_CHECK+cv2.CALIB_CB_NORMALIZE_IMAGE)
+        ret, corners = cv2.findChessboardCorners(gray, CHECKERBOARD, cv2.CALIB_CB_ADAPTIVE_THRESH+cv2.CALIB_CB_FAST_CHECK+cv2.CALIB_CB_NORMALIZE_IMAGE)
+        #print("ret\n",ret)
+        #print("corners\n",corners)
 
         """
         If desired number of corner are detected,
@@ -57,6 +60,8 @@ def camera_calibration(images_dir):
         them on the images of checker board
         """
         if ret == True:
+
+            print("------- in ret=true")
             objpoints.append(objp)
             # refining pixel coordinates for given 2d points.
             corners2 = cv2.cornerSubPix(gray,corners,(11,11),(-1,-1),criteria)
@@ -66,12 +71,12 @@ def camera_calibration(images_dir):
             # Draw and display the corners
             img = cv2.drawChessboardCorners(img, CHECKERBOARD, corners2,ret)
 
-        cv2.imshow('img',img)
+        #cv2.imshow('img',img)
         cv2.waitKey(0)
 
     cv2.destroyAllWindows()
 
-    h,w = img.shape[:2]
+    #h,w = img.shape[:2]
 
     """
     Performing camera calibration by 
@@ -79,13 +84,24 @@ def camera_calibration(images_dir):
     and corresponding pixel coordinates of the 
     detected corners (imgpoints)
     """
-    ret, K, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1],None,None)
+
+    print("----gray------ ", gray.shape)
+    print("----imgpoints------ ", np.shape(imgpoints))
+    print("----objpoints------ ", np.shape(objpoints))
+
+
+#    ret, K, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1],None,None)
+    #ret, K, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape(),None,None)
+
+    ret, K, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, np.shape(gray)[::-1],None,None)
+
     
     
-    R=cv.Rodrigues(rvecs[0], R)
-    temp=np.concatinate((R,tvecs[0]),axis=1)
+    R = cv2.Rodrigues(rvecs[0])[0]
+    t = tvecs[0]
+    temp=np.concatenate((R,t),axis=1)
     
-    M = np.dot(K,x)
+    M = np.dot(K,temp)
     
     '''
     R = cv2.Rodrigues(rvecs[0])[0]
