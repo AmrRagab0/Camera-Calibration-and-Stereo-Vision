@@ -25,17 +25,21 @@ import os
 import argparse
 from student import (calculate_projection_matrix, compute_camera_center)
 from helpers import (evaluate_points, visualize_points, plot3dview)
+from pathlib import Path
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 
 def main(args):
-    data_dir = os.path.dirname(__file__) + '../data/'
+    data_dir = os.path.dirname(__file__) #+ '..\\data\\'
+    #print(data_dir) 
 
+    data_dir = str(Path(data_dir).parents[0])
+    #print(data_dir)
     ########## Part (1)
-    Points_2D = np.loadtxt(data_dir + 'pts2d-norm-pic_a.txt')
-    Points_3D = np.loadtxt(data_dir + 'pts3d-norm.txt')
+    Points_2D = np.loadtxt(data_dir + '/data/pts2d-norm-pic_a.txt')
+    Points_3D = np.loadtxt(data_dir + '/data/pts3d-norm.txt')
 
     # (Optional) Run this once you have your code working
     # with the easier, normalized points above.
