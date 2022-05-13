@@ -91,19 +91,26 @@ def camera_calibration(images_dir):
 
 
 
-'''
+
 data_dir = os.path.dirname(__file__) + '../data/'
 
 images_dir_r=data_dir+'/right'
 images_dir_l=data_dir+'/left'
 
-M_r,rvecs_r,tvecs_r=camera_calibration(images_dir_r)
-M_l,rvecs_l,tvecs_l=camera_calibration(images_dir_l)
+#Validate the computed projection matrix as done in PART I
 
+M_r,objpoints_r, imgpoints_r=camera_calibration(images_dir_r)
+M_l,objpoints_l, imgpoints_l=camera_calibration(images_dir_l)
+
+M_r_0=calculate_projection_matrix(imgpoints_r,objpoints_r)
+M_l_0=calculate_projection_matrix(imgpoints_l,objpoints_l)
+
+print("the difference between calibrated and implemented  right projection matrix M_r= ",M_r-M_r_0)
+print("the difference between calibrated and implemented  left projection matrix M_l= ",M_l-M_l_0)
 
 # evaluate points
-[Projected_2D_Pts_l, Residual_l] = evaluate_points( M_l, Points_2D_l, Points_3D_l) ????????????????????
-[Projected_2D_Pts_r, Residual_r] = evaluate_points( M_r, Points_2D_r, Points_3D_r)
+[Projected_2D_Pts_l, Residual_l] = evaluate_points( M_l, imgpoints_l,objpoints_l) 
+[Projected_2D_Pts_r, Residual_r] = evaluate_points( M_r, imgpoints_r,objpoints_r)
 
 #Calculate the camera center using the M found from previous step
 Center_l = compute_camera_center(M_l)
@@ -112,10 +119,10 @@ Center_r = compute_camera_center(M_r)
 #compute the fundamental matrix
 # F=
 # F, mask = cv2.findFundamentalMat(img1_points, img2_points, cv2.FM_RANSAC)
-S=cv2.stereoCalibrate(objpoints, imgpoints_r,imgpoints_l)
+S=cv2.stereoCalibrate(objpoints_r, imgpoints_r,imgpoints_l)    # objpoints_r may cause errors ?
 E=S[:-2]
 
-'''
+
 # print("Camera matrix : \n")
 # print(mtx)
 # print("dist : \n")
