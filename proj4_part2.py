@@ -1,38 +1,20 @@
-#  Load images and prepare them 
-# img_r = cv2.imread('../data/pic_a.jpg')
-# img_b = cv2.imread('../data/pic_b.jpg')
-
-
-
-# Extract 2d points and map them to 3d point 
-
-# Points_2D = np.loadtxt('../data/pts2d-norm-pic_a.txt')
-# Points_3D = np.loadtxt('../data/pts3d-norm.txt')
-
-##                              ????????????????????????????????????
-
-#Calculate the projection matrix given corresponding 2D and 3D points
-
-'''
-M_l = calculate_projection_matrix(Points_2D_l,Points_3D_l)
-M_r = calculate_projection_matrix(Points_2D_r,Points_3D_r)
-
-
-# evaluate points
-[Projected_2D_Pts_l, Residual_l] = evaluate_points( M_l, Points_2D_l, Points_3D_l)
-[Projected_2D_Pts_r, Residual_r] = evaluate_points( M_r, Points_2D_r, Points_3D_r)
-
-'''
-####################################################################################
-
+import warnings
+import numpy as np
+import os
+import argparse
+from student import (calculate_projection_matrix, compute_camera_center)
+from helpers import (evaluate_points, visualize_points, plot3dview)
 import cv2
 import numpy as np
 import os
 import glob
 
 
+####################################################################################
 
-def camera_calibration(  images_dir):
+#Calculate the projection matrix given corresponding 2D and 3D points
+
+def camera_calibration(images_dir):
     '''
     input: path
     
@@ -100,13 +82,33 @@ def camera_calibration(  images_dir):
     ret, M, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1],None,None)
 
     return M,rvecs,tvecs
+
+
+
+'''
+data_dir = os.path.dirname(__file__) + '../data/'
+
+images_dir_r=data_dir+'/right'
+images_dir_l=data_dir+'/left'
+
+M_r,rvecs_r,tvecs_r=camera_calibration(images_dir_r)
+M_l,rvecs_l,tvecs_l=camera_calibration(images_dir_l)
+
+
 # evaluate points
-# [Projected_2D_Pts_r, Residual_r] = evaluate_points( M, imgpoints, objpoints)
+[Projected_2D_Pts_l, Residual_l] = evaluate_points( M_l, Points_2D_l, Points_3D_l) ????????????????????
+[Projected_2D_Pts_r, Residual_r] = evaluate_points( M_r, Points_2D_r, Points_3D_r)
 
-#[Projected_2D_Pts_l, Residual_l] = evaluate_points( M_l, Points_2D_l, Points_3D_l)
-#[Projected_2D_Pts_r, Residual_r] = evaluate_points( M_r, Points_2D_r, Points_3D_r)
+#Calculate the camera center using the M found from previous step
+Center_l = compute_camera_center(M_l)
+Center_r = compute_camera_center(M_r)
 
+#compute the fundamental matrix
+# F=
+# F, mask = cv2.findFundamentalMat(img1_points, img2_points, cv2.FM_RANSAC)
+F=cv2.stereoCalibrate(objpoints, imgpoints_r,imgpoints_l) ??????????
 
+'''
 # print("Camera matrix : \n")
 # print(mtx)
 # print("dist : \n")
@@ -117,19 +119,7 @@ def camera_calibration(  images_dir):
 # print(tvecs)
 
 
-#compute the fundamental matrix
-
-# F=
-# F, mask = cv2.findFundamentalMat(img1_points, img2_points, cv2.FM_RANSAC)
-# F=cv2.stereoCalibrate(objpoints, imgpoints_r,imgpoints_l)
 
 # visualize points
 # visualize_points(Points_2D_l,Projected_2D_Pts_l)
 # visualize_points(Points_2D_r,Projected_2D_Pts_r)
-
-
-#Calculate the camera center using the M found from previous step
-# Center_l = compute_camera_center(M_l)
-# Center_r = compute_camera_center(M_r)
-
-
