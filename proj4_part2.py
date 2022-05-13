@@ -86,6 +86,14 @@ def camera_calibration(images_dir):
     temp=np.concatinate((R,tvecs[0]),axis=1)
     
     M = np.dot(K,x)
+    
+    '''
+    R = cv2.Rodrigues(rvecs[0])[0]
+t = tvecs[0]
+Rt = np.concatenate([R,t], axis=-1) # [R|t]
+P = np.matmul(mtx,Rt) # A[R|t]
+    '''
+    
 
     return M,objpoints, imgpoints
 
