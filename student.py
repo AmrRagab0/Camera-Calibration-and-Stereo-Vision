@@ -38,6 +38,7 @@ def calculate_projection_matrix(Points_2D, Points_3D):
     # set of equations on the project page. 
     #
     ##################
+    Points_3D=np.array(Points_3D)
     N_of_points = Points_3D.shape[0]
     # init
     Image_points = np.zeros((N_of_points*2,1))
@@ -45,19 +46,32 @@ def calculate_projection_matrix(Points_2D, Points_3D):
 
     # setting the matrices 
     for i in range(0,N_of_points,2):
-        World_points[i,:] = [Points_3D[i,1],Points_3D[i,2] ,Points_3D[i:3] ,1, 0, 0,0, 0 ,-Points_2D[i,1]*Points_3D[i,1], -Points_2D[i,1]*Points_3D[i,2],-Points_2D[i,1]*Points_3D[i,3]]
-        World_points[i+1,:] = [0,0,0,0,Points_3D[i,1],Points_3D[i,2],Points_3D[i:3],1, -Points_2D[i,2]*Points_3D[i,1], -Points_2D[i,2]*Points_3D[i,2], -Points_2D[i,2]*Points_3D[i,3]]
-        Image_points[i] = [Points_2D(i,1) ]
-        Image_points[i+1] = [Points_2D(i,2)] 
+        World_points[i,:] = [Points_3D[i,0],Points_3D[i,1] ,Points_3D[i,2] ,1, 0, 0,0, 0 ,-Points_2D[i,0]*Points_3D[i,0], -Points_2D[i,0]*Points_3D[i,1],-Points_2D[i,1]*Points_3D[i,2]]
+        #print(i)
+        #World_points[i,:] = [Points_3D[i,0],Points_3D[i,1],Points_3D[i,2],4,5,6,7,8,9,10,11]
+        World_points[i+1,:] = [0,0,0,0,Points_3D[i,0],Points_3D[i,1],Points_3D[i,2],1, -Points_2D[i,1]*Points_3D[i,0], -Points_2D[i,1]*Points_3D[i,1], -Points_2D[i,1]*Points_3D[i,2]]
+        Image_points[i] = [Points_2D[i,0] ]
+        Image_points[i+1] = [Points_2D[i,1]]
 
     # world_points * M = image points
     # so, M = world points inverse * image points
 
-    World_points_inv = inv(World_points)
+   
+    # A = Worldpoint    B = image points
 
-    M = World_points_inv*Image_points
+    A_T_A = np.dot(np.mat(World_points).T,np.mat(World_points))
+    A_T_B = np.dot(np.mat(World_points).T,np.mat(Image_points))
+
+    A_T_A_inv = inv(A_T_A)
+    M = np.dot(A_T_A_inv,A_T_B)
+    M = M.T
+    M = np.array(M)
     print(M.shape)
+
+    M = np.append(M,[1])
     M = M.reshape((3,4))
+
+    
 
 
     ##################
@@ -93,3 +107,59 @@ def compute_camera_center(M):
     # Center = np.array([1, 1, 1])
 
     return Center
+
+
+'''
+
+
+# Testing Calculate Projection matrix func
+Points_3D= np.array([[312.747,309.140, 30.086]
+,[305.796, 311.649, 30.356]
+,[307.694, 312.358 ,30.418]
+,[310.149, 307.186 ,29.298]
+,[311.937, 310.105, 29.216]
+,[311.202, 307.572, 30.682]
+,[307.106, 306.876, 28.660]
+,[309.317, 312.490, 30.230]
+,[307.435 ,310.151, 29.318]
+,[308.253 ,306.300, 28.881]
+,[306.650 ,309.301, 28.905]
+,[308.069 ,306.831, 29.189]
+,[309.671 ,308.834, 29.029]
+,[308.255 ,309.955, 29.267]
+,[307.546 ,308.613, 28.963]
+,[311.036 ,309.206, 28.913]
+,[307.518 ,308.175, 29.069]
+,[309.950 ,311.262, 29.990]
+,[312.160 ,310.772, 29.080]
+,[311.988, 312.709, 30.514]]
+)
+
+Points_2D = np.array([[880,  214],
+ [43,  203],
+[270,  197],
+[886,  347],
+[745,  302],
+[943 , 128],
+[476 , 590],
+[419 , 214],
+[317 , 335],
+[783 , 521],
+[235 , 427],
+[665 , 429],
+[655 , 362],
+[427 , 333],
+[412 , 415],
+[746 , 351],
+[434 , 415],
+[525 , 234],
+[716 , 308],
+[602 , 187]])
+
+#print(Points_2D)
+#print(Points_3D)
+
+M = calculate_projection_matrix(Points_2D,Points_3D)
+print(M)
+
+'''
