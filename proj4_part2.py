@@ -93,7 +93,7 @@ def camera_calibration(images_dir):
     
     '''
     R = cv2.Rodrigues(rvecs[0])[0]
-t = tvecs[0]
+    t = tvecs[0]
 Rt = np.concatenate([R,t], axis=-1) # [R|t]
 P = np.matmul(mtx,Rt) # A[R|t]
     '''
@@ -144,7 +144,8 @@ Center_r = compute_camera_center(M_r)
 #flags = 0
 #flags |= cv.CALIB_FIX_INTRINSIC
 retStereo, newCameraMatrixL, distL, newCameraMatrixR, distR, rot, trans, essentialMatrix, fundamentalMatrix = cv2.stereoCalibrate(objpoints_r, imgpoints_l, imgpoints_r, M_l,dist_l,M_r,dist_r,(960,1280))    # objpoints_r may cause errors ?
-E=essentialMatrix[:-2]
+#E=essentialMatrix[:-2]
+
 
 
 # print("Camera matrix : \n")
