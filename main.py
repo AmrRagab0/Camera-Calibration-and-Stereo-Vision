@@ -21,10 +21,13 @@
 # You need to report the values calculated from pts2d-pic_b and pts3d
 import warnings
 import numpy as np
-import os
 import argparse
 from student import (calculate_projection_matrix, compute_camera_center)
 from helpers import (evaluate_points, visualize_points, plot3dview)
+from proj4_part2 import(camera_calibration)
+import cv2
+import os
+import glob
 from pathlib import Path
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -32,6 +35,38 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 
 def main(args):
+
+
+    data_dir = os.path.dirname(__file__) #+ '../data/'
+
+    from pathlib import Path
+    data_dir = str(Path(data_dir).parents[0])
+
+    images_dir_r=data_dir+'/data/right'
+    images_dir_l=data_dir+'/data/left'
+    M_r,objpoints_r, imgpoints_r,K_dash,dist_r=camera_calibration(images_dir_r)
+    
+    M_l,objpoints_l, imgpoints_l,K,dist_l=camera_calibration(images_dir_l)
+
+
+    print("objpoints_r--------",np.shape(objpoints_r))
+    print("imgpoints_r--------",np.shape(imgpoints_r))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     data_dir = os.path.dirname(__file__) #+ '..\\data\\'
     #print(data_dir) 
 
@@ -65,6 +100,9 @@ def main(args):
 
     if not args.no_vis:
         plot3dview(Points_3D, Center)
+
+
+
 
 
 if __name__ == '__main__':
