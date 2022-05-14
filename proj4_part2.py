@@ -42,6 +42,7 @@ def camera_calibration(images_dir):
     # Extracting path of individual image stored in a given directory
     # images = glob.glob('./images/*.jpg')
     images = glob.glob(images_dir+'/*.jpeg')
+    print(len(images))
     print("path---- ",images_dir )
     gray=[]
     for fname in images:
@@ -51,6 +52,8 @@ def camera_calibration(images_dir):
         # Find the chess board corners
         # If desired number of corners are found in the image then ret = true
         ret, corners = cv2.findChessboardCorners(gray, CHECKERBOARD, cv2.CALIB_CB_ADAPTIVE_THRESH+cv2.CALIB_CB_FAST_CHECK+cv2.CALIB_CB_NORMALIZE_IMAGE)
+        corners = np.array([corner for [corner] in corners])
+
         #print("ret\n",ret)
         #print("corners\n",corners)
 
@@ -67,12 +70,14 @@ def camera_calibration(images_dir):
             corners2 = cv2.cornerSubPix(gray,corners,(11,11),(-1,-1),criteria)
 
             imgpoints.append(corners2)
+            print("---if-imgpoints------ ", np.shape(imgpoints))
 
             # Draw and display the corners
             img = cv2.drawChessboardCorners(img, CHECKERBOARD, corners2,ret)
 
+        break
         #cv2.imshow('img',img)
-        cv2.waitKey(0)
+        #cv2.waitKey(0)
 
     cv2.destroyAllWindows()
 
@@ -85,9 +90,22 @@ def camera_calibration(images_dir):
     detected corners (imgpoints)
     """
 
+    
     print("----gray------ ", gray.shape)
+    '''
     print("----imgpoints------ ", np.shape(imgpoints))
     print("----objpoints------ ", np.shape(objpoints))
+    print("---------objpoints------ ",objpoints)
+    '''
+    print("---------imgpoints------ ",imgpoints)
+    print("----imgpoints------ ", np.shape(imgpoints))
+
+    imgpoints=np.array(imgpoints)
+    imgpoints=np.reshape(imgpoints,(49,2))
+
+    objpoints=np.array(objpoints)
+    objpoints=np.reshape(objpoints,(49,3))
+    print("----imgpoints------ ", np.shape(imgpoints))
 
 
 #    ret, K, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1],None,None)
@@ -123,8 +141,12 @@ images_dir_l=data_dir+'/left'
 
 #Validate the computed projection matrix as done in PART I
 
-M_r,objpoints_r, imgpoints_r,_=camera_calibration(images_dir_r)
-M_l,objpoints_l, imgpoints_l,_=camera_calibration(images_dir_l)
+M_r,objpoints_r, imgpoints_r,K_dash=camera_calibration(images_dir_r)
+M_l,objpoints_l, imgpoints_l,K=camera_calibration(images_dir_l)
+
+
+print("objpoints_r--------",len(objpoints_r))
+print("imgpoints_r--------",len(imgpoints_r))
 
 M_r_0=calculate_projection_matrix(imgpoints_r,objpoints_r)
 M_l_0=calculate_projection_matrix(imgpoints_l,objpoints_l)
